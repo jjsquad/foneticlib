@@ -1,14 +1,15 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: squad
  * Date: 05/08/16
- * Time: 04:45
+ * Time: 05:10
  */
+
 namespace Fonetic\WordSplitter;
 
-interface WordSplitterInterface
+
+class WordSplitterAbstract implements WordSplitterInterface
 {
 
 }
