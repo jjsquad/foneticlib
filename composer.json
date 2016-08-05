@@ -11,12 +11,12 @@
         }
     ],
     "require": {
-        "danielstjules/stringy": "^2.3"
+        "danielstjules/stringy": "^2.3",
+        "phpunit/phpunit": "^5.5"
     },
     "autoload": {
         "psr-4": {
             "Fonetic\\": "src/"
         }
     }
-
 }

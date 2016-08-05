@@ -8,8 +8,9 @@
 
 namespace Fonetic\Vector;
 
+use BadFunctionCallException;
 use Fonetic\Vector\Contracts\VectorInterface;
-use Fonetic\Vector\Exceptions\VectorUndefinedOffsetException;
+use InvalidArgumentException;
 use OutOfBoundsException;
 use OutOfRangeException;
 
@@ -56,7 +57,25 @@ abstract class VectorAbstractor implements VectorInterface
      */
     public function __toString()
     {
-        return ($this->element !== null) ? $this->element : $this->combine();
+        return (string)$this->element;
+    }
+
+    /**
+     * Explict toString conversion
+     * @return string
+     */
+    public function toString()
+    {
+        return $this->__toString();
+    }
+
+    /**
+     * Get the array of Vector elements
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->elements;
     }
 
     /**
@@ -82,7 +101,12 @@ abstract class VectorAbstractor implements VectorInterface
      */
     public function compareTo($value)
     {
-        return strcmp($this->element, $value);
+        if($this->element !== null) {
+            $result = strcmp($this->element, $value);
+            $this->element = null;
+            return $result;
+        }
+        throw new BadFunctionCallException("No element set to compareTo.");
     }
 
     /**
@@ -102,42 +126,23 @@ abstract class VectorAbstractor implements VectorInterface
      */
     public function addElementAt($value, $index)
     {
-        if($index < 0 || $index > $this->count) {
-            throw new OutOfBoundsException("Index $index its ou of bounds.");
-        }
+        $this->checkBounds($index);
         
-        if($index === 0) {
-            if(is_array($value)) {
-                $this->elements = array_merge($value, $this->elements);
-            } else {
-                array_unshift($this->elements, $value);
-            }
-            return $this;
-        }
+        $this->elements = array_splice($this->elements, $index, 0, $value);
         
-        if($this->count === $index) {
-            if(is_array($value)) {
-                $this->elements = array_merge($this->elements, $value);
-            } else {
-                array_push($this->elements, $value);
-            }
-            return $this;
-        }
-        
-        $leftPart = array_slice($this->elements, 0, $index);
-        $rightPart = array_slice($this->elements, $index);
-
-        if(is_array($value)) {
-            $leftPart = array_merge($leftPart, $value);
-        } else {
-            array_push($leftPart, $value);
-        }
-
-        $this->elements = array_merge($leftPart, $rightPart);
-
-        //Cleans the current element
         $this->element = null;
         $this->count();
+        
+        return $this;
+    }
+
+    public function setElementAt($index, $value)
+    {
+        $this->checkBounds($index);
+        
+        $this->elements[$index] = $value;
+        
+        $this->element = $value;
         
         return $this;
     }
@@ -154,12 +159,44 @@ abstract class VectorAbstractor implements VectorInterface
         } else {
             array_push($this->elements, $value);
         }
+
+        $this->element = null;
+        $this->count();
         return $this;
     }
 
+    /**
+     * Remove a element at $index
+     * @param $index
+     * @return $this
+     */
     public function removeElementAt($index)
     {
-        // TODO: Implement removeElementAt() method.
+        $this->checkBounds($index);
+
+        $this->element = null;
+
+        array_splice($this->elements, $index, 1);
+        
+        $this->count();
+
+        return $this;
+    }
+
+    /**
+     * Remove elements that matches $array items
+     * @param $array
+     * @return $this
+     */
+    public function removeElements($array)
+    {
+        if(!is_array($array)) {
+            throw new InvalidArgumentException("removeElements function needs an Array argument.");
+        }
+
+        $this->elements = array_diff($this->elements, $array);
+
+        return $this;
     }
 
     /**
@@ -192,6 +229,13 @@ abstract class VectorAbstractor implements VectorInterface
     {
         if(property_exists($this, $name)) {
             return $this->{$name}();
+        }
+    }
+
+    private function checkBounds($index)
+    {
+        if($index < 0 || $index > $this->count) {
+            throw new OutOfBoundsException("Index $index its ou of bounds.");
         }
     }
 

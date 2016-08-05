@@ -14,6 +14,11 @@ interface VectorInterface
 {
     public function __toString();
 
+    public function toArray();
+    
+    public function toString();
+        
+
     /**
      * @param $index
      * @return $mixed
@@ -38,6 +43,12 @@ interface VectorInterface
     public function removeElementAt($index);
 
     /**
+     * @param $array
+     * @return mixed
+     */
+    public function removeElements($array);
+
+    /**
      * @param $index
      * @return Vector
      */
@@ -59,4 +70,11 @@ interface VectorInterface
      * @return boolean
      */
     public function has($value);
+
+    /**
+     * @param $index
+     * @param $value
+     * @return mixed
+     */
+    public function setElementAt($index, $value);
 }
