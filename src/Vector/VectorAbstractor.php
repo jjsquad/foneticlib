@@ -9,23 +9,30 @@
 namespace Fonetic\Vector;
 
 use Fonetic\Vector\Contracts\VectorInterface;
-use Fonetic\Vector\Exceptions\VectorOutOfBoundsException;
 use Fonetic\Vector\Exceptions\VectorUndefinedOffsetException;
+use OutOfBoundsException;
+use OutOfRangeException;
 
 abstract class VectorAbstractor implements VectorInterface
 {
     /**
      * Contains the Vector items
-     * @var array
      */
-    protected $elements;
+    protected $elements = [];
+
     /**
      * Default delimiter
-     * @var string
      */
     protected $delimiter;
+
+    /**
+     * The current element
+     */
     protected $element;
-    
+
+    /**
+     * Number of items in elements array
+     */
     protected $count;
 
     /**
@@ -41,32 +48,46 @@ abstract class VectorAbstractor implements VectorInterface
             $this->count();
             return;
         }
-
-        $this->elements = [];
     }
 
+    /**
+     * Magic function to convert to string
+     * @return string
+     */
     public function __toString()
     {
-        return $this->element ?: $this->combine();
+        return ($this->element !== null) ? $this->element : $this->combine();
     }
 
+    /**
+     * Set the current element of collection
+     * @param $index
+     * @return $this|mixed
+     */
     public function elementAt($index)
     {
-        if($index > count($this->elements) - 1) {
-            throw new VectorUndefinedOffsetException($index);
+        if($index < 0 || $index > count($this->elements) - 1) {
+            throw new OutOfRangeException("Index its out of range. (Undefined offset error).");
         }
 
         $this->element = $this->elements[$index];
         return $this;
     }
 
+    /**
+     * Non boolean compare 
+     * (returns 0 at found a same value, otherwise returns de distance difference)
+     * @param $value
+     * @return int
+     */
     public function compareTo($value)
     {
         return strcmp($this->element, $value);
     }
 
     /**
-     *
+     * Combine all elements into a string
+     * @return string
      */
     public function combine()
     {
@@ -82,7 +103,7 @@ abstract class VectorAbstractor implements VectorInterface
     public function addElementAt($value, $index)
     {
         if($index < 0 || $index > $this->count) {
-            throw new VectorOutOfBoundsException($index);
+            throw new OutOfBoundsException("Index $index its ou of bounds.");
         }
         
         if($index === 0) {
@@ -114,11 +135,18 @@ abstract class VectorAbstractor implements VectorInterface
 
         $this->elements = array_merge($leftPart, $rightPart);
 
+        //Cleans the current element
+        $this->element = null;
         $this->count();
         
         return $this;
     }
-    
+
+    /**
+     * Adds a new element at end of elements array
+     * @param $value
+     * @return $this|mixed
+     */
     public function addElement($value)
     {
         if(is_array($value)) {
@@ -133,13 +161,33 @@ abstract class VectorAbstractor implements VectorInterface
     {
         // TODO: Implement removeElementAt() method.
     }
-    
+
+    /**
+     * Check if 'HAS' a element with $value in elements array
+     * Returns a boolean compareTo function
+     * @param $value
+     * @return bool
+     */
+    public function has($value)
+    {
+        return in_array($value, $this->elements);
+    }
+
+    /**
+     * Return the number of items in elements array
+     * @return int
+     */
     public function count()
     {
         $this->count = count($this->elements);
         return $this->count;
     }
 
+    /**
+     * Magic function to access the Class Protected Properties
+     * @param $name
+     * @return mixed
+     */
     public function __get($name)
     {
         if(property_exists($this, $name)) {
@@ -147,9 +195,5 @@ abstract class VectorAbstractor implements VectorInterface
         }
     }
 
-    public function has($value)
-    {
-        return in_array($value, $this->elements);
-    }
 }
 

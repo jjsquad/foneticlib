@@ -1,13 +1,17 @@
 {
-    "name": "szsoftware/foneticlib",
+    "name": "jjsquad/foneticlib",
     "authors": [
         {
             "name": "jjsquad",
             "email": "jorge.techinfo@gmail.com"
+        },
+        {
+            "name": "zeusjammer",
+            "email": "zeusjammer@gmail.com"
         }
     ],
     "require": {
-
+        "danielstjules/stringy": "^2.3"
     },
     "autoload": {
         "psr-4": {
