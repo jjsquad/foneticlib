@@ -9,7 +9,7 @@
 namespace Fonetic\Vector;
 
 
-class Vector extends VectorAbstractor
+class Vector extends AbstractVector
 {
 
 }

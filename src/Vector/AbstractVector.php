@@ -14,7 +14,7 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use OutOfRangeException;
 
-abstract class VectorAbstractor implements VectorInterface
+abstract class AbstractVector implements VectorInterface
 {
     /**
      * Contains the Vector items

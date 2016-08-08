@@ -9,7 +9,7 @@
 namespace Fonetic\WordSplitter;
 
 
-class WordSplitterAbstract implements WordSplitterInterface
+class AbstractWordSplitter implements WordSplitterInterface
 {
 
 }
